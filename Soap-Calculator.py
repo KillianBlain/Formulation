@@ -14,15 +14,23 @@ def CalculQuantiteSoude (MasseHuile, IndiceSapo):
 def AfficheTypeSavon (Taux):
     if Taux < 0:
         print("Le savon est caustique et dangereux.")
+        type_savon="Caustique & dangereux"
     elif Taux < 5:
         print("La marge de sécurité de 5 % n'est pas respectée.")
+        type_savon="Marge de sécurité non respectée"
     elif (Taux > 5) and (Taux < 8):
         print("Le savon est peu surgras et par conséquent peu doux.")
+        type_savon="Peu surgras et peu doux"
     elif (Taux > 8) and (Taux < 10):
         print("Le savon est surgras, il est doux et par conséquent idéal.")
+        type_savon="surgras, doux et idéal"
     elif (Taux > 10) and (Taux < 12):
         print("Le savon est très surgras et très mou.")
-    else: print("Le savon est trop riche en huile et risque de déphaser lors de la fabrication.")
+        type_savon="très surgras et très mou"
+    elif (Taux > 12):
+        print("Le savon est trop riche en huile et risque de déphaser lors de la fabrication.")
+        type_savon="trop riche, risque de déphasage"
+    return type_savon
 
 def TauxSurgraissage (MasseSoude, MasseHuileTotale, IndiceSapoMelange):
     TauxPredit=((MasseHuileTotale-(MasseSoude/IndiceSapoMelange*1000))/MasseHuileTotale)*100
@@ -34,6 +42,7 @@ continuer=True
 soude_totale_theorique=0
 masse_totale_huiles=0
 indice_sapo_melange=0
+synthese=[]
 while continuer : #Demande les types d'huiles et les masses à utiliser pour la saponification
     huiles = [huile[0] for huile in liste_saponification_naoh]
     indices_saponification = [huile[1] for huile in liste_saponification_naoh]
@@ -47,6 +56,7 @@ while continuer : #Demande les types d'huiles et les masses à utiliser pour la 
         soude_totale_theorique += masse_soude_theorique
         masse_totale_huiles += MasseHuile
         indice_sapo_melange += IndiceSapo*MasseHuile
+        synthese.append([TypeHuile, MasseHuile])
     else:
         print("L'huile ",TypeHuile," n'est pas reconnue.")
 
@@ -77,23 +87,34 @@ while SoudePesee<0:
     SoudePesee=float(input("Renseigner la masse de soude utilisée (en g): "))
 Taux=TauxSurgraissage (SoudePesee, masse_totale_huiles, indice_sapo_melange)
 print("Le taux de surgraissage calculé est de ",Taux,"%.")
-AfficheTypeSavon(Taux)
+type_savon=AfficheTypeSavon(Taux)
+synthese.append(["Soude (g)", SoudePesee])
+synthese.append(["Taux (%)", Taux])
+synthese.append(["Type de savon", type_savon])
 
 #autres MP
 MasseEau=float(input("Entrer la masse d'eau pesée (en g):"))
 while MasseEau<0:
     print("La quantité d'eau ne peut pas être négative")
     MasseEau=float(input("Entrer la masse d'eau pesée (en g):"))
+synthese.append(["Eau (g)", MasseEau])
 
 MasseParfum=float(input("Entrer la masse de parfum pesée (en g):"))
 while MasseParfum<0:
     print("La quantité de parfum ne peut pas être négative")
     MasseParfum=float(input("Entrer la masse de parfum pesée (en g):"))
+synthese.append(["Parfum (g)", MasseParfum])
 
 MasseColorant=float(input("Entrer la masse de colorant pesée (en g):"))
 while MasseColorant<0:
     print("La quantité de colorant ne peut pas être négative")
     MasseColorant=float(input("Entrer la masse de colorant pesée (en g):"))
+synthese.append(["Colorant (g)", MasseColorant])
+
+print(synthese)
+print("-----------Synthèse-----------")
+for lst in synthese:
+        print("-",lst[0]," : ",lst[1],";")
 
 plt.figure(figsize = (10, 5)) #Affichage graphique
 x = [MasseEau, MasseParfum, MasseColorant, masse_totale_huiles, SoudePesee]
